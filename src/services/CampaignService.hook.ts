@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import LocalstorageDb from "./LocalstorageDb";
+import LocalstorageDefault from "./LocalstorageDefault";
 
 export default function useCampaignService() {
   const dbService = LocalstorageDb();
@@ -13,22 +14,26 @@ export default function useCampaignService() {
   };
 
   const initDbData = useCallback((data : any) => {
-    data = data || {
-      CAMPAIGNS_KEYWORD: {}
-    }
-    return data;
+    let emptyData : any = LocalstorageDefault().DEFAULT_DATA;
+    let initedData = data || emptyData;
+    return initedData;
   }, []);
 
   const saveCampaign = useCallback((title, content) => {
     const id = uid();
+    const userId = uid();
     const campaign = {
       'id': id,
+      'created_at': new Date(),
+      'user': '0x' + userId,
       'title': title,
       'content': content
     }
     let data : any = dbService.getData();
+    console.log(data);
     data = initDbData(data);
-    let allCampaigns = data[CAMPAIGNS_KEYWORD]
+    let allCampaigns = data[CAMPAIGNS_KEYWORD];
+    console.log(allCampaigns);
     allCampaigns[id] = campaign;
     dbService.saveData(data);
   }, []);
@@ -36,10 +41,14 @@ export default function useCampaignService() {
   const getAllCampaigns = useCallback(() => {
     let data : any = dbService.getData();
     data = initDbData(data);
-    return data!['campaigns'];
+    // This is just in case we are invoking the service for
+    // the first time and no data is populated yet
+    dbService.saveData(data);
+    return data![CAMPAIGNS_KEYWORD] || {};
   }, []);
 
   return {
-    saveCampaign
+    saveCampaign,
+    getAllCampaigns
   }
 }

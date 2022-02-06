@@ -1,12 +1,19 @@
+import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddIcon from '@mui/icons-material/Add';
-import * as React from 'react';
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const pages = ['Add campaign']
 
-  const onNewCampaign = () => {
+  const goHome = () => {
+    navigate('/');
+  }
+  
+  const createNewCampaign = () => {
+    navigate('/create');
   }
 
   return (
@@ -14,12 +21,15 @@ export default function Navbar() {
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Button>
+            <Button
+              key={'homepage'}
+              onClick={goHome}
+            >
               <img src='logo.png' height='48px' />
             </Button>
             <Button
-              key={'new_campaign'}
-              onClick={onNewCampaign}
+              key={'create'}
+              onClick={createNewCampaign}
             >
               <AddIcon />&nbsp;Add campaign
             </Button>

@@ -1,22 +1,10 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
 import Navbar from './components/navbar/Navbar';
+import Feed from './components/feed/Feed';
 import CreateCampaign from './components/create/CreateCampaign';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}.
-    </Typography>
-  );
-}
 
 export default function App() {
   const theme = useTheme();
@@ -37,7 +25,8 @@ export default function App() {
         sx={{
           display: 'flex',
           width: '100%',
-          height: '100vh',
+          minHeight: '100vh',
+          flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
           bgcolor: 'background.default',
@@ -45,8 +34,16 @@ export default function App() {
           p: 3,
         }}
       >
-          <Navbar />
-          <CreateCampaign />
+          <Router>
+            <Navbar />
+            <Routes>
+              {/* Homepage */}
+              <Route path="/" element={<Feed />} />
+              {/* Create a new campaign */}
+              <Route path="/create" element={<CreateCampaign />} />
+            </Routes>
+          </Router>
+          
       </Box>
     </ThemeProvider>
   

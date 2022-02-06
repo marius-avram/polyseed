@@ -19,9 +19,19 @@ export default function Feed() {
     },
   });
 
+  const feedSorter = (element1: any, element2: any) => {
+    if (element1['created_at'] > element2['created_at']) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  }
+
   useEffect(() => {
     const campaignsDict = service.getAllCampaigns();
     const campaignsList = Object.keys(campaignsDict).map((id : any) => (campaignsDict[id]));
+    const sortedCampaigns = campaignsList.sort(feedSorter)
     setCampaigns(campaignsList);
   }, [setCampaigns]);
 

@@ -19,13 +19,13 @@ export default function useCampaignService() {
     return initedData;
   }, []);
 
-  const saveCampaign = useCallback((title, content) => {
+  const saveCampaign = useCallback((title, content, walletAddress) => {
     const id = uid();
     const userId = uid();
     const campaign = {
       'id': id,
       'created_at': new Date(),
-      'user': '0x' + userId,
+      'user': walletAddress,
       'title': title,
       'content': content
     }

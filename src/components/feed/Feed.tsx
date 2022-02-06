@@ -1,15 +1,18 @@
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import moment from 'moment';
-import { Card, CardHeader, Box, CardContent, Typography } from '@mui/material';
+import { Card, CardHeader, Box, CardActions, CardContent, Typography, Collapse } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useCampaignService from '../../services/CampaignService.hook';
+import CardItem from './CardItem';
 
 
 export default function Feed() {
   const service = useCampaignService();
   const [campaigns, setCampaigns] = useState<any>([]);
+  const [expanded, setExpanded] = useState<any>({});
   const lightTheme = createTheme({
     palette: {
       mode: 'light'
@@ -21,10 +24,6 @@ export default function Feed() {
     const campaignsList = Object.keys(campaignsDict).map((id : any) => (campaignsDict[id]));
     setCampaigns(campaignsList);
   }, [setCampaigns]);
-
-  const getSubheader = (campaign: any) => {
-    return new String('by ' + campaign.userId + ' on ' + moment(campaign.created_at).format('LLL'));
-  }
 
   return (
     <>
@@ -39,24 +38,7 @@ export default function Feed() {
               key={campaign.id}
               sx={{ p: '15px'}}
             >
-              <Card sx={
-                  {
-                    width: '100%',
-                    minHeight: '100px'
-                  }
-                }
-                variant='outlined'>
-                  <CardHeader
-                    title={campaign.title}
-                    subheader={getSubheader(campaign)}
-                  />
-                  <CardContent>
-                    <Typography>
-                      <div dangerouslySetInnerHTML={{__html: campaign.content}}></div>
-                    </Typography>
-                    
-                  </CardContent>
-              </Card>
+              <CardItem campaign={campaign} />
             </Box>
           ))}
         </Box>

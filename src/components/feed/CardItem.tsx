@@ -32,8 +32,8 @@ export default function CardItem(props: CardItemProps) {
   }, [setAmount]);
 
   const donate = useCallback(() => {
-    sequence.sendAmount(amount, props.campaign.id);
-  }, [amount]);
+    sequence.sendAmount(props.campaign.user, amount, props.campaign.id);
+  }, [sequence.sendAmount, amount]);
 
   return (
     <>

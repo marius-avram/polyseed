@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
 import Web3Modal from '@0xsequence/web3modal'
@@ -30,7 +30,6 @@ if (!window?.ethereum?.isSequence) {
   }
 }
 
-
 const web3Modal = new Web3Modal({
   providerOptions,
   cacheProvider: true
@@ -39,20 +38,22 @@ const web3Modal = new Web3Modal({
 export default function useSequenceService() {
   const appContext = useAppContext();
 
-  const connectWallet =  async () => {
-    const wallet = await web3Modal.connect()
+  const connectWallet =  useCallback(() => {
+    web3Modal.connect().then((wallet: any) => {
 
-    const provider = new ethers.providers.Web3Provider(wallet)
+      const provider = new ethers.providers.Web3Provider(wallet);
 
-    if (wallet.sequence) {
-      ;(provider as any).sequence = wallet.sequence
-    }
+      if (wallet.sequence) {
+        ;(provider as any).sequence = wallet.sequence
+      }
 
-    appContext.setSequenceProvider(provider);
-  }
+      appContext.setSequenceProvider(provider);
+    });
 
-  const disconnectWallet = async () => {
-    web3Modal.clearCachedProvider()
+  }, [appContext.setSequenceProvider]);
+
+  const disconnectWallet = useCallback(() => {
+    web3Modal.clearCachedProvider();
 
     const provider = appContext.state.sequenceProvider;
     if (provider && (provider as any).sequence) {
@@ -63,23 +64,28 @@ export default function useSequenceService() {
     appContext.setSequenceProvider(null);
     appContext.setNetwork(null);
     appContext.setAddress(null);
-  }
+  }, [appContext.setSequenceProvider, appContext.setNetwork, appContext.setAddress]);
 
-  const sendAmount = async (amount: string, campaignId: string) => {
-    const signer = appContext.state.sequenceProvider!.getSigner() // select DefaultChain signer by default
-    const toAddress = '0xcE7E9050fd38f24F80396e2c4176df55598DDC03';
-    const textEncoder = new TextEncoder();
-    const transactionData = 'polyseed-' + campaignId;
+  const sendAmount = useCallback((toAddress: string, amount: string, campaignId: string) => {
+    if (appContext.state.sequenceProvider != null) {
+      const signer = appContext.state.sequenceProvider.getSigner() // select DefaultChain signer by default
+      const textEncoder = new TextEncoder();
+      const transactionData = 'polyseed-' + campaignId;
+      console.log("transactionData: " + transactionData);
 
-    const transaction = {
-      gasLimit: '0x55555',
-      to: toAddress,
-      value: ethers.utils.parseEther(amount),
-      data: textEncoder.encode(transactionData)
+      const transaction = {
+        gasLimit: '0x55555',
+        to: toAddress,
+        value: ethers.utils.parseEther(amount),
+        data: '0x'
+      }
+
+      signer.sendTransaction(transaction);
     }
-
-    await signer.sendTransaction(transaction);
-  }
+    else {
+      console.error("Sequence provider not properly inited");
+    }
+  }, [appContext.state.sequenceProvider]);
 
   useEffect(() => {
     const provider = appContext.state.sequenceProvider;

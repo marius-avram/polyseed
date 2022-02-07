@@ -22,7 +22,6 @@ export default function App() {
     }
   })
   return (
-    <AppProvider>
        <ThemeProvider theme={darkTheme}>
         <Box
           sx={{
@@ -37,6 +36,7 @@ export default function App() {
             p: 3,
           }}
         >
+          <AppProvider>
             <Router>
               <Navbar />
               <Routes>
@@ -48,11 +48,8 @@ export default function App() {
                 <Route path="/about" element={<About />} />
               </Routes>
             </Router>
-            
+          </AppProvider>
         </Box>
       </ThemeProvider>
-    </AppProvider>
-   
-  
   );
 }

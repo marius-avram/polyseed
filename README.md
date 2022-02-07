@@ -14,3 +14,5 @@ yarn start
 ```
 
 It will run locally on http://localhost:3000
+
+It uses material ui as a React UI framework.
